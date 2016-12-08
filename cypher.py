@@ -16,11 +16,13 @@ parser.add_argument('ringstellung', metavar='ringstellung', type=str, action='st
 #parser.add_argument('--decrypt', nargs='?', const=decrypt, default=encrypt,
                     #help='decrypts the message')
 parser.add_argument('file', metavar='filename', type=str,
-                    help='name or path to the file wich contains your message')
+                    help='name or path to the file wich contains your message. 0 if stdin')
 args = parser.parse_args()
 
-text = open(args.file, 'r')
-msg = text.read()
+if args.file != "0":
+    text = open(args.file, 'r')
+    msg = text.read()
+else: msg = input()
 lenmsg = len(msg)
 w1 = args.walzenlage1
 w2 = args.walzenlage2
