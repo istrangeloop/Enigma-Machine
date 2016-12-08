@@ -52,13 +52,13 @@ class Enigma:
         self.r3 = r3
         self.ref = ref
     def ringset(self, rs):
-        self.r1.set(ord(rs[0])-96)
-        self.r2.set(ord(rs[1])-96)
-        self.r3.set(ord(rs[2])-96)
+        self.r1.set(ord(rs[0])-97)
+        self.r2.set(ord(rs[1])-97)
+        self.r3.set(ord(rs[2])-97)
     def encrypt(self, message):
         EncryptedMessage = []
         for i in message:
-            EncryptedMessage.append(self.newLetter(ord(i.lower())-96))
+            EncryptedMessage.append(self.newLetter(ord(i.lower())-97))
             self.rotateAll()
         NewMessage = ''.join(chr(i + 97) for i in EncryptedMessage)
         return NewMessage
