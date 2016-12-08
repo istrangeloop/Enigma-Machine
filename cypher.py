@@ -3,16 +3,16 @@
 import argparse, sys
 ALPHABET_SIZE = 26
 parser = argparse.ArgumentParser(description='Encrypts a message from a text file.')
-parser.add_argument('walzenlage1', metavar='w1', type=int, action='store',
-                    help='')
+parser.add_argument('walzenlage1', metavar='walzenlage1', type=int, action='store',
+                    help='number of the rotor to use for position 1')
 
-parser.add_argument('walzenlage2', metavar='w2', type=int, action='store',
-                    help='')
+parser.add_argument('walzenlage2', metavar='walzenlage2', type=int, action='store',
+                    help='number of the rotor to use for position 2')
 
-parser.add_argument('walzenlage3', metavar='w3', type=int, action='store',
-                    help='')
-parser.add_argument('ringstellung', metavar='rs', type=str, action='store',
-                    help='')
+parser.add_argument('walzenlage3', metavar='walzenlage3', type=int, action='store',
+                    help='number of the rotor to use for position 3')
+parser.add_argument('ringstellung', metavar='ringstellung', type=str, action='store',
+                    help='setting of the rings, three letters to be at position 0 for each ring')
 #parser.add_argument('--decrypt', nargs='?', const=decrypt, default=encrypt,
                     #help='decrypts the message')
 parser.add_argument('file', metavar='filename', type=str,
