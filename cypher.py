@@ -27,7 +27,7 @@ lenmsg = len(msg)
 w1 = args.walzenlage1
 w2 = args.walzenlage2
 w3 = args.walzenlage3
-rs1 = args.ringstellung
+rs = args.ringstellung
 #inicia os rotores
 class Rotor:
     config = {'1':[13, 17, 21, 16, 15, 24, 9, 25, 4, 18, 14, 8, 0, 20, 10, 19, 11, 1, 12, 22, 3, 6, 23, 5, 7, 2],
@@ -45,10 +45,10 @@ class Rotor:
         self.numbers[self.len-1] = init
     def set(self, rs):
         while self.numbers[0] != rs:
-            self.rotate
+            self.rotate()
     def do(self, previousOut):
         if previousOut < 0:
-            pass
+            return -64
         return self.numbers[previousOut]
 
 #inicia a maquina baseada na configuração da chave
@@ -60,20 +60,22 @@ class Enigma:
         self.r3 = r3
         self.ref = ref
     def ringset(self, rs):
-        self.r1.set(int(rs[0])-96)
-        self.r2.set(int(rs[1])-96)
-        self.r3.set(int(rs[2])-96)
+        self.r1.set(ord(rs[0])-96)
+        self.r2.set(ord(rs[1])-96)
+        self.r3.set(ord(rs[2])-96)
     def encrypt(self, message):
         EncryptedMessage = []
         for i in message:
-            EncryptedMessage.append(self.newLetter(ord(i.lower())-96, message))
+            EncryptedMessage.append(self.newLetter(ord(i.lower())-96))
             self.rotateAll()
+        map(lambda i: i + 96, EncryptedMessage)
         return EncryptedMessage
 #    def decrypt(self, message)
     def newLetter(self, num):
         return self.r1.do(self.r2.do(self.r3.do(self.ref.do(self.r3.do(self.r2.do(self.r1.do(num)))))))
     def rotateAll(self):
         self.r1.rotate()
+        print (self.counter[0])
         self.counter[0] = self.counter[0] + 1
         if self.counter[0] == ALPHABET_SIZE:
             self.r2.rotate()
@@ -83,7 +85,7 @@ class Enigma:
                 self.r3.rotate()
                 self.counter[2] = self.counter[2] + 1
                 self.counter[1] = 0
-
-E = Enigma(Rotor(w1), Rotor(w2), Rotor(w3), Rotor('Reflector'))
+E = Enigma(Rotor(str(w1)), Rotor(str(w2)), Rotor(str(w3)), Rotor('Reflector'))
 E.ringset(rs)
-print(E.r1)
+EncryptedMessage = E.encrypt(msg)
+print (EncryptedMessage)
