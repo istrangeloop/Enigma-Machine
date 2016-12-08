@@ -12,23 +12,16 @@ parser.add_argument('walzenlage2', metavar='walzenlage2', type=int, action='stor
 parser.add_argument('walzenlage3', metavar='walzenlage3', type=int, action='store',
                     help='number of the rotor to use for position 3')
 parser.add_argument('ringstellung', metavar='ringstellung', type=str, action='store',
-                    help='setting of the rings, three letters to be at position 0 for each ring')
-#parser.add_argument('--decrypt', nargs='?', const=decrypt, default=encrypt,
-                    #help='decrypts the message')
-parser.add_argument('file', metavar='filename', type=str,
-                    help='name or path to the file wich contains your message. 0 if stdin')
+                    help='three letters to be at the initial position of the ring')
+parser.add_argument('--decrypt', nargs='?',
+                    help='add this argument to decrypt the message')
+parser.add_argument('filei', metavar='Input', nargs='?', type=str,
+                    help='name or path to the file wich contains your message. Leave blank if stdin')
+parser.add_argument('fileo', metavar='Output', nargs='?', type=str,
+                    help='name or path to the file wich you\'d like to print the output. Leave blank if stdout')
 args = parser.parse_args()
 
-if args.file != "0":
-    text = open(args.file, 'r')
-    msg = text.read()
-else: msg = input()
-lenmsg = len(msg)
-w1 = args.walzenlage1
-w2 = args.walzenlage2
-w3 = args.walzenlage3
-rs = args.ringstellung
-#inicia os rotores
+# machine classes
 class Rotor:
     config = {'1':[13, 17, 21, 16, 15, 24, 9, 25, 4, 18, 14, 8, 0, 20, 10, 19, 11, 1, 12, 22, 3, 6, 23, 5, 7, 2],
               '2':[17, 8, 18, 2, 11, 1, 6, 19, 24, 10, 16, 14, 7, 4, 23, 13, 0, 25, 20, 12, 22, 5, 9, 15, 21, 3],
@@ -48,10 +41,9 @@ class Rotor:
             self.rotate()
     def do(self, previousOut):
         if previousOut < 0:
-            return -64
+            return -65
         return self.numbers[previousOut]
 
-#inicia a maquina baseada na configuração da chave
 class Enigma:
     counter = [0, 0, 0]
     def __init__(self, r1, r2, r3, ref):
@@ -68,14 +60,14 @@ class Enigma:
         for i in message:
             EncryptedMessage.append(self.newLetter(ord(i.lower())-96))
             self.rotateAll()
-        map(lambda i: i + 96, EncryptedMessage)
-        return EncryptedMessage
-#    def decrypt(self, message)
+        NewMessage = ''.join(chr(i + 97) for i in EncryptedMessage)
+        return NewMessage
+    def decrypt(self, message):
+        pass
     def newLetter(self, num):
         return self.r1.do(self.r2.do(self.r3.do(self.ref.do(self.r3.do(self.r2.do(self.r1.do(num)))))))
     def rotateAll(self):
         self.r1.rotate()
-        print (self.counter[0])
         self.counter[0] = self.counter[0] + 1
         if self.counter[0] == ALPHABET_SIZE:
             self.r2.rotate()
@@ -85,7 +77,23 @@ class Enigma:
                 self.r3.rotate()
                 self.counter[2] = self.counter[2] + 1
                 self.counter[1] = 0
+
+#input treatment
+if args.filei:
+    text = open(args.filei, 'r')
+    msg = text.read()
+else: msg = input()
+lenmsg = len(msg)
+w1 = args.walzenlage1
+w2 = args.walzenlage2
+w3 = args.walzenlage3
+rs = args.ringstellung
+
+#setup
 E = Enigma(Rotor(str(w1)), Rotor(str(w2)), Rotor(str(w3)), Rotor('Reflector'))
 E.ringset(rs)
 EncryptedMessage = E.encrypt(msg)
-print (EncryptedMessage)
+if args.fileo:
+    outext = open(args.fileo, 'w')
+    outext.write(EncryptedMessage)
+else: print (EncryptedMessage)
